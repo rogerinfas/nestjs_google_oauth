@@ -18,6 +18,15 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ default: 'local' })
+  provider: 'local' | 'google';
+
   @OneToMany(() => Task, task => task.user)
   tasks: Task[];
 

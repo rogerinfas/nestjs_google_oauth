@@ -7,6 +7,14 @@ import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
+interface GoogleUser {
+  email: string;
+  name: string;
+  avatar: string;
+  googleId: string;
+  provider: 'google';
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,6 +40,7 @@ export class AuthService {
       name,
       email,
       password: hashedPassword,
+      provider: 'local',
     });
 
     const savedUser = await this.userRepository.save(user);
@@ -54,7 +63,7 @@ export class AuthService {
 
     // Buscar usuario por email
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
+    if (!user || user.provider !== 'local') {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
@@ -83,5 +92,39 @@ export class AuthService {
       throw new UnauthorizedException('Usuario no encontrado');
     }
     return user;
+  }
+
+  async validateOrCreateGoogleUser(googleUser: GoogleUser) {
+    let user = await this.userRepository.findOne({
+      where: [
+        { email: googleUser.email },
+        { googleId: googleUser.googleId },
+      ],
+    });
+
+    if (user) {
+      // Actualizar información de Google si es necesario
+      if (user.provider === 'google' && user.googleId !== googleUser.googleId) {
+        user.googleId = googleUser.googleId;
+        user.avatar = googleUser.avatar;
+        user = await this.userRepository.save(user);
+      }
+    } else {
+      // Crear nuevo usuario de Google
+      user = this.userRepository.create({
+        ...googleUser,
+        isActive: true,
+      });
+      user = await this.userRepository.save(user);
+    }
+
+    // Generar token JWT
+    const payload = { sub: user.id, email: user.email };
+    const token = this.jwtService.sign(payload);
+
+    return {
+      user,
+      access_token: token,
+    };
   }
 } 
