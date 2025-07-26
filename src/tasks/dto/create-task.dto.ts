@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsBoolean, IsEnum, IsDateString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsBoolean, IsEnum, IsDateString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateTaskDto {
@@ -47,12 +47,4 @@ export class CreateTaskDto {
   @IsOptional()
   @IsDateString()
   dueDate?: string;
-
-  @ApiProperty({
-    description: 'ID del usuario propietario de la tarea',
-    example: 1,
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
 }
