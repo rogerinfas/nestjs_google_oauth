@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Role } from '../common/enums/role.enum';
 
 interface GoogleUser {
   email: string;
@@ -41,6 +42,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       provider: 'local',
+      roles: [Role.USER], // Asignar rol por defecto
     });
 
     const savedUser = await this.userRepository.save(user);
@@ -74,7 +76,11 @@ export class AuthService {
     }
 
     // Generar token JWT
-    const payload = { sub: user.id, email: user.email };
+    const payload = { 
+      sub: user.id, 
+      email: user.email,
+      roles: user.roles, // Incluir roles en el token
+    };
     const token = this.jwtService.sign(payload);
 
     // Retornar usuario sin contraseña
@@ -113,13 +119,18 @@ export class AuthService {
       // Crear nuevo usuario de Google
       user = this.userRepository.create({
         ...googleUser,
+        roles: [Role.USER], // Asignar rol por defecto
         isActive: true,
       });
       user = await this.userRepository.save(user);
     }
 
     // Generar token JWT
-    const payload = { sub: user.id, email: user.email };
+    const payload = { 
+      sub: user.id, 
+      email: user.email,
+      roles: user.roles, // Incluir roles en el token
+    };
     const token = this.jwtService.sign(payload);
 
     return {
