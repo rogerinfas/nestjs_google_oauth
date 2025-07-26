@@ -69,10 +69,9 @@ export class User {
   provider: 'local' | 'google';
 
   @ApiProperty({
-    example: 'user',
+    example: UserRole.USER,
     description: 'Rol del usuario',
     enum: UserRole,
-    default: UserRole.USER,
   })
   @Column({
     type: 'enum',
