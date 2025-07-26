@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Task } from '../../tasks/entities/task.entity';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 @Entity('users')
 export class User {
@@ -66,6 +67,19 @@ export class User {
   })
   @Column({ default: 'local' })
   provider: 'local' | 'google';
+
+  @ApiProperty({
+    example: 'user',
+    description: 'Rol del usuario',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @ApiProperty({
     description: 'Lista de tareas del usuario',
