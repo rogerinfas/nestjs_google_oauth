@@ -26,10 +26,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message: message,
     };
 
-    if (process.env.NODE_ENV !== 'production' && exception instanceof Error) {
-      errorResponse['stack'] = exception.stack;
-    }
-
     response.status(status).json(errorResponse);
   }
 } 
