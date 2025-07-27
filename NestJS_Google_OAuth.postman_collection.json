@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "b8f3e8a0-5b1a-4b0e-8b1a-5b1a4b0e8b1a",
 		"name": "NestJS Google OAuth API",
-		"description": "API con autenticación local, Google OAuth y gestión de tareas",
+		"description": "API con autenticación local, Google OAuth, gestión de usuarios y tareas, y sistema de autorización basado en roles",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -95,6 +95,43 @@
 					}
 				},
 				{
+					"name": "Google Auth",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/google",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google"
+							]
+						},
+						"description": "Inicia el flujo de autenticación con Google OAuth. Redirige al usuario a la página de inicio de sesión de Google."
+					}
+				},
+				{
+					"name": "Google Auth Callback",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/google/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google",
+								"callback"
+							]
+						},
+						"description": "URL de callback para la autenticación de Google. Google redirige aquí después de la autenticación exitosa."
+					}
+				},
+				{
 					"name": "Profile",
 					"request": {
 						"auth": {
@@ -127,6 +164,42 @@
 			"name": "Users",
 			"item": [
 				{
+					"name": "Create User (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New User\",\n    \"email\": \"newuser@example.com\",\n    \"password\": \"123456\",\n    \"role\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Solo administradores pueden crear usuarios directamente"
+					}
+				},
+				{
 					"name": "Get All Users (Admin)",
 					"request": {
 						"auth": {
@@ -149,11 +222,12 @@
 							"path": [
 								"users"
 							]
-						}
+						},
+						"description": "Solo administradores pueden ver todos los usuarios"
 					}
 				},
 				{
-					"name": "Get User by ID",
+					"name": "Get User by ID (Admin or Owner)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -176,11 +250,12 @@
 								"users",
 								"1"
 							]
-						}
+						},
+						"description": "Administradores pueden ver cualquier usuario, usuarios normales solo pueden verse a sí mismos"
 					}
 				},
 				{
-					"name": "Update User",
+					"name": "Update User (Admin or Owner)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -212,7 +287,36 @@
 								"users",
 								"1"
 							]
-						}
+						},
+						"description": "Administradores pueden actualizar cualquier usuario, usuarios normales solo pueden actualizarse a sí mismos"
+					}
+				},
+				{
+					"name": "Delete User (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"3"
+							]
+						},
+						"description": "Solo administradores pueden eliminar usuarios"
 					}
 				}
 			]
@@ -252,7 +356,8 @@
 							"path": [
 								"tasks"
 							]
-						}
+						},
+						"description": "Crea una tarea para el usuario autenticado"
 					}
 				},
 				{
@@ -288,11 +393,12 @@
 								"tasks",
 								"admin"
 							]
-						}
+						},
+						"description": "Solo administradores pueden crear tareas para otros usuarios"
 					}
 				},
 				{
-					"name": "Get All Tasks",
+					"name": "Get All Tasks (User)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -314,7 +420,8 @@
 							"path": [
 								"tasks"
 							]
-						}
+						},
+						"description": "Usuarios normales ven solo sus tareas, administradores ven todas las tareas"
 					}
 				},
 				{
@@ -342,11 +449,12 @@
 								"user",
 								"2"
 							]
-						}
+						},
+						"description": "Solo administradores pueden ver tareas de otros usuarios"
 					}
 				},
 				{
-					"name": "Get Task by ID",
+					"name": "Get Task by ID (Admin or Owner)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -369,11 +477,12 @@
 								"tasks",
 								"1"
 							]
-						}
+						},
+						"description": "Administradores pueden ver cualquier tarea, usuarios normales solo pueden ver sus propias tareas"
 					}
 				},
 				{
-					"name": "Update Task",
+					"name": "Update Task (Admin or Owner)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -405,11 +514,12 @@
 								"tasks",
 								"1"
 							]
-						}
+						},
+						"description": "Administradores pueden actualizar cualquier tarea, usuarios normales solo pueden actualizar sus propias tareas"
 					}
 				},
 				{
-					"name": "Delete Task",
+					"name": "Delete Task (Admin or Owner)",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -432,10 +542,38 @@
 								"tasks",
 								"1"
 							]
-						}
+						},
+						"description": "Administradores pueden eliminar cualquier tarea, usuarios normales solo pueden eliminar sus propias tareas"
 					}
 				}
 			]
 		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Guardar el token JWT después del login",
+					"if (pm.response.code === 201 && pm.request.url.toString().includes('/auth/login')) {",
+					"    var jsonData = pm.response.json();",
+					"    if (jsonData.access_token) {",
+					"        pm.environment.set('auth_token', jsonData.access_token);",
+					"        console.log('Token guardado: ' + jsonData.access_token);",
+					"    }",
+					"}"
+				]
+			}
+		}
 	]
-} 
+}
