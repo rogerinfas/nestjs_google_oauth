@@ -1,83 +1,46 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('tasks')
 export class Task {
-  @ApiProperty({
-    example: 1,
-    description: 'ID único de la tarea',
-  })
+
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({
-    example: 'Implementar autenticación',
-    description: 'Título de la tarea',
-    maxLength: 200,
-  })
+
   @Column({ length: 200 })
   title: string;
 
-  @ApiProperty({
-    example: 'Implementar sistema de autenticación usando JWT',
-    description: 'Descripción detallada de la tarea',
-    nullable: true,
-  })
+
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ApiProperty({
-    example: false,
-    description: 'Estado de completado de la tarea',
-    default: false,
-  })
+
   @Column({ default: false })
   completed: boolean;
 
-  @ApiProperty({
-    example: 'medium',
-    description: 'Prioridad de la tarea',
-    enum: ['low', 'medium', 'high'],
-    default: 'medium',
-  })
+
   @Column({ type: 'enum', enum: ['low', 'medium', 'high'], default: 'medium' })
   priority: 'low' | 'medium' | 'high';
 
-  @ApiProperty({
-    example: '2024-02-01',
-    description: 'Fecha de vencimiento de la tarea',
-    nullable: true,
-  })
+
   @Column({ type: 'date', nullable: true })
   dueDate: Date;
 
-  @ApiProperty({
-    example: 1,
-    description: 'ID del usuario propietario de la tarea',
-  })
+
   @Column()
   userId: number;
 
-  @ApiProperty({
-    description: 'Información del usuario propietario',
-    type: () => User,
-  })
+
   @ManyToOne(() => User, user => user.tasks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ApiProperty({
-    example: '2024-01-15T12:00:00Z',
-    description: 'Fecha de creación de la tarea',
-  })
+
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({
-    example: '2024-01-15T12:30:00Z',
-    description: 'Fecha de última actualización de la tarea',
-  })
+
   @UpdateDateColumn()
   updatedAt: Date;
 }
