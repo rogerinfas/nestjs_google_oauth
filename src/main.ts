@@ -20,6 +20,8 @@ async function bootstrap() {
 
   // Configurar CORS
   app.enableCors();
+  
+  // Swagger ha sido eliminado para permitir mayor flexibilidad en el desarrollo
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -8,7 +8,7 @@ API RESTful construida con NestJS que implementa autenticación local y Google O
 - 🔑 Integración con Google OAuth2
 - 👥 Gestión de Usuarios
 - ✅ Sistema de Tareas
-- 📝 Documentación Swagger
+- 🛡️ Control de Acceso Basado en Roles (RBAC)
 - 🔒 Seguridad y Validaciones
 
 ## 🛠️ Tecnologías
@@ -19,7 +19,6 @@ API RESTful construida con NestJS que implementa autenticación local y Google O
 - JWT
 - Passport
 - Google OAuth2
-- Swagger/OpenAPI
 
 ## 📋 Requisitos Previos
 
@@ -110,6 +109,8 @@ src/
 - CRUD completo
 - Relación con tareas
 - Validaciones
+- Roles de usuario (ADMIN, USER)
+- Gestión de permisos
 
 ### 3. Tareas (`/tasks`)
 
@@ -117,19 +118,36 @@ src/
 - Relación con usuarios
 - Prioridades y fechas
 
-## 📝 Documentación API
 
-La documentación completa de la API está disponible en Swagger:
-```
-http://localhost:3000/api/docs
-```
 
-## 🔒 Seguridad
+## 🔒 Seguridad y Autorización
 
 - JWT para sesiones
 - Encriptación de contraseñas con bcrypt
 - Validación de datos con class-validator
 - Protección contra ataques comunes
+- Sistema de roles (ADMIN, USER)
+- Decoradores de autorización (@AdminRoute, @RequireOwnership, @Auth)
+- Guards para verificación de permisos
+
+## 🛡️ Sistema de Autorización
+
+El proyecto implementa un sistema de autorización basado en roles y propiedad de recursos:
+
+- **Roles de Usuario**: 
+  - `ADMIN`: Acceso completo a todos los recursos
+  - `USER`: Acceso limitado a sus propios recursos
+
+- **Decoradores de Autorización**:
+  - `@AdminRoute()`: Restringe el acceso solo a administradores
+  - `@RequireOwnership()`: Verifica que el usuario sea propietario del recurso
+  - `@Auth()`: Combina autenticación JWT con autorización
+
+- **Guard de Autorización**: Implementa la lógica de verificación de permisos basada en roles y propiedad de recursos
+
+## 📋 Notas de Desarrollo
+
+- Se han eliminado las anotaciones de Swagger para permitir mayor flexibilidad en el desarrollo
 
 ## 🌐 Endpoints Principales
 
@@ -190,7 +208,6 @@ npm run start:prod
 - El token JWT expira en 1 hora
 - Las contraseñas deben tener mínimo 6 caracteres
 - Los emails deben ser únicos
-- La documentación Swagger está protegida en producción
 
 ## 🤝 Contribución
 
