@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Request, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -28,14 +28,12 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req) {
+  async googleAuthRedirect(@Req() req): Promise<AuthResponse> {
     if (!req.user) {
-      return 'No user from Google';
+      throw new UnauthorizedException('No user from Google');
     }
-    return {
-      message: 'User information from Google',
-      user: req.user,
-    };
+    // req.user ya contiene el objeto {user, access_token} del método validateOrCreateGoogleUser
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
